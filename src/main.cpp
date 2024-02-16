@@ -42,12 +42,18 @@ class Snake
         deque<Vector2> body = {Vector2{6, 9}, Vector2{5, 9}, Vector2{4, 9}};
         Vector2 direction = {1, 0};
         bool addSegment = false;
-        void Snake(enum left, enum up, enum right, enum down)
+        bool keyPressedThisUpdate = false;
+        int left_press;
+        int up_press;
+        int right_press;
+        int down_press;
+
+        Snake(int left, int up, int right, int down)
         {
-            enum left_press = left;
-            enum up_press = up;
-            enum right_press = right;
-            enum down_press = down;
+            left_press = left;
+            up_press = up;
+            right_press = right;
+            down_press = down;
         }
 
         void Draw()
@@ -63,7 +69,26 @@ class Snake
 
         void UpdateDirection()
         {
-
+            if(IsKeyPressed(up_press) && direction.y != 1 && !keyPressedThisUpdate)
+            {
+                direction = {0, -1};
+                keyPressedThisUpdate = true;
+            }
+            if(IsKeyPressed(down_press) && direction.y != -1 && !keyPressedThisUpdate)
+            {
+                direction = {0, 1};
+                keyPressedThisUpdate = true;
+            }
+            if(IsKeyPressed(left_press) && direction.x != 1 && !keyPressedThisUpdate)
+            {
+                direction = {-1, 0};
+                keyPressedThisUpdate = true;
+            }
+            if(IsKeyPressed(right_press) && direction.x != -1 && !keyPressedThisUpdate)
+            {
+                direction = {1, 0};
+                keyPressedThisUpdate = true;
+            }
         }
 
         void Update()
@@ -135,7 +160,7 @@ class Food
 class Game 
 {
     public:
-        Snake snake = Snake();
+        Snake snake = Snake(KEY_LEFT, KEY_UP, KEY_RIGHT, KEY_DOWN);
         Food food = Food(snake.body);
         bool running = true;
         int score = 0;
@@ -233,40 +258,21 @@ int main()
     SetTargetFPS(60);
 
     Game game = Game();
-    bool keyPressedThisUpdate = false;
+    
     while(WindowShouldClose() == false)
     {
         BeginDrawing();
         if(eventTriggered(0.2))
         {
             game.Update();
-            keyPressedThisUpdate = false;       
+            game.snake.keyPressedThisUpdate = false;       
         }
-        
-        if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1 && !keyPressedThisUpdate)
-        {
-            game.snake.direction = {0, -1};
-            keyPressedThisUpdate = true;
-        }
-        if(IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1 && !keyPressedThisUpdate)
-        {
-            game.snake.direction = {0, 1};
-            keyPressedThisUpdate = true;
-        }
-        if(IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1 && !keyPressedThisUpdate)
-        {
-            game.snake.direction = {-1, 0};
-            keyPressedThisUpdate = true;
-        }
-        if(IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1 && !keyPressedThisUpdate)
-        {
-            game.snake.direction = {1, 0};
-            keyPressedThisUpdate = true;
-        }
+        game.snake.UpdateDirection();
+
 
         if(IsKeyPressed(KEY_SPACE))
         {
-            keyPressedThisUpdate = false;
+            game.snake.keyPressedThisUpdate = false;
             game.startGame();
         }
 
