@@ -3,6 +3,7 @@
 #include <deque>
 #include <raymath.h>
 #include "SETTINGS.h"
+#include "buttons.cpp"
 
 
 using namespace std;
@@ -160,6 +161,7 @@ class Game
     public:
         Snake snake = Snake(KEY_LEFT, KEY_UP, KEY_RIGHT, KEY_DOWN);
         Food food = Food(snake.body);
+        Push_Btn btn = Push_Btn(WINDOW_WIDTH/4, WINDOW_HIGHT/4, 200, 80);
         bool running = false;
         int score = 0;
         Sound eatSound;
@@ -184,6 +186,7 @@ class Game
             snake.Draw();
             if(!running)
             {
+                btn.Draw_Btn();
                 DrawText("PRESS SPACE TO START", (WINDOW_WIDTH/2-350), WINDOW_HIGHT/2, 40, DARK_GREEN);
             }
             
@@ -191,8 +194,10 @@ class Game
 
         void Update()
         {
+            btn.Btn_pressed();
             if(running)
             {
+                
                 snake.Update();
                 CheckCollisionWithFood();
                 CheckCollisionWithEdges();
