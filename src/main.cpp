@@ -2,14 +2,12 @@
 #include <iostream>
 #include <deque>
 #include <raymath.h>
+#include "SETTINGS.h"
+
 
 using namespace std;
 
-Color green = {173, 204, 96, 255};
-Color darkGreen = {43, 51, 24, 255};
-int cellSize = 30;
-int cellCount = 25;
-int offset = 75;
+
 
 double lastUpdateTime = 0;
 
@@ -62,8 +60,8 @@ class Snake
             {
                 float x = body[i].x;
                 float y = body[i].y;
-                Rectangle segment = Rectangle{offset+x*cellSize, offset+y*cellSize, (float)cellSize, (float)cellSize};
-                DrawRectangleRounded(segment, 0.5, 6, darkGreen);
+                Rectangle segment = Rectangle{OFFSET+x*CELL_SIZE, OFFSET+y*CELL_SIZE, (float)CELL_SIZE, (float)CELL_SIZE};
+                DrawRectangleRounded(segment, 0.5, 6, DARK_GREEN);
             }
         }
 
@@ -122,7 +120,7 @@ class Food
         Vector2 position;
         Food(deque<Vector2> snakeBody)
         {
-            Image image = LoadImage("C:/gameDev/Graphics/food.PNG");
+            Image image = LoadImage(FOOD_IMAGE_PATH);
             texture = LoadTextureFromImage(image);
             UnloadImage(image);
             position = GenerateRandomPos(snakeBody);
@@ -134,13 +132,13 @@ class Food
         }
         void Draw()
         {
-            DrawTexture(texture, offset+position.x*cellSize, offset+position.y*cellSize, WHITE);//DrawRectangle(position.x*cellSize, position.y*cellSize, cellSize, cellSize, darkGreen);
+            DrawTexture(texture, OFFSET+position.x*CELL_SIZE, OFFSET+position.y*CELL_SIZE, WHITE);//DrawRectangle(position.x*cellSize, position.y*cellSize, cellSize, cellSize, DARK_GREEN);
         }
 
         Vector2 GenerateRandomCell()
         {
-            float x = GetRandomValue(0, cellCount-1);
-            float y = GetRandomValue(0, cellCount-1);
+            float x = GetRandomValue(0, CELL_COUNT-1);
+            float y = GetRandomValue(0, CELL_COUNT-1);
             return Vector2{x, y};
         }
 
@@ -162,7 +160,7 @@ class Game
     public:
         Snake snake = Snake(KEY_LEFT, KEY_UP, KEY_RIGHT, KEY_DOWN);
         Food food = Food(snake.body);
-        bool running = true;
+        bool running = false;
         int score = 0;
         Sound eatSound;
         Sound gameOverSound;
@@ -184,6 +182,11 @@ class Game
         {
             food.Draw();
             snake.Draw();
+            if(!running)
+            {
+                DrawText("PRESS SPACE TO START", (WINDOW_WIDTH/2-350), WINDOW_HIGHT/2, 40, DARK_GREEN);
+            }
+            
         }
 
         void Update()
@@ -211,11 +214,11 @@ class Game
 
         void CheckCollisionWithEdges()
         {
-            if(snake.body[0].x == cellCount || snake.body[0].x == -1)
+            if(snake.body[0].x == CELL_COUNT || snake.body[0].x == -1)
             {
                 GameOver();
             }
-            if( snake.body[0].y == cellCount || snake.body[0].y == -1)
+            if( snake.body[0].y == CELL_COUNT || snake.body[0].y == -1)
             {
                 GameOver();
                 
@@ -254,7 +257,7 @@ class Game
 int main()
 {
     cout << "print shit" << endl;
-    InitWindow(2*offset +cellSize*cellCount, 2*offset + cellSize*cellCount, "SNAKE");
+    InitWindow(WINDOW_WIDTH, WINDOW_HIGHT, "SNAKE");
     SetTargetFPS(60);
 
     Game game = Game();
@@ -272,15 +275,16 @@ int main()
 
         if(IsKeyPressed(KEY_SPACE))
         {
+            std::cout << "SPACE IS PRESSED" << std::endl;
             game.snake.keyPressedThisUpdate = false;
             game.startGame();
         }
 
         // DRAWING
-        ClearBackground(green);
-        DrawRectangleLinesEx(Rectangle{(float)offset-5, (float)offset-5, (float)cellSize*cellCount+10, (float)cellSize*cellCount+10}, 5, darkGreen);
-        DrawText("snake", offset -5, 20, 40, darkGreen);
-        DrawText(TextFormat("%i", game.score), offset -5, offset+cellSize*cellCount+3, 40, darkGreen);
+        ClearBackground(GREEN_LIGHT);
+        DrawRectangleLinesEx(Rectangle{(float)OFFSET-5, (float)OFFSET-5, (float)CELL_SIZE*CELL_COUNT+10, (float)CELL_SIZE*CELL_COUNT+10}, 5, DARK_GREEN);
+        DrawText("snake", OFFSET -5, 20, 40, DARK_GREEN);
+        DrawText(TextFormat("%i", game.score), OFFSET -5, OFFSET+CELL_SIZE*CELL_COUNT+3, 40, DARK_GREEN);
         game.Draw();
         EndDrawing();
 
